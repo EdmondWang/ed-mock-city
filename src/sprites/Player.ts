@@ -1,20 +1,20 @@
 import * as PIXI from 'pixi.js'
 
 export class Player {
+  public sprite: PIXI.Graphics
+  private speed: number = 5
+  private velocity: { x: number; y: number } = { x: 0, y: 0 }
+  private keys: Record<string, boolean> = {}
+  private width: number = 50
+  private height: number = 50
+
   constructor() {
-    this.sprite = null
-    this.speed = 5
-    this.velocity = { x: 0, y: 0 }
-    this.keys = {}
-    this.width = 50
-    this.height = 50
-    
+    this.sprite = new PIXI.Graphics()
     this.init()
   }
 
-  init() {
+  private init(): void {
     // 创建玩家精灵
-    this.sprite = new PIXI.Graphics()
     this.sprite.beginFill(0xff0000)
     this.sprite.drawRect(-this.width / 2, -this.height / 2, this.width, this.height)
     this.sprite.endFill()
@@ -23,15 +23,15 @@ export class Player {
     this.sprite.anchor.set(0.5)
   }
 
-  handleKeyDown(e) {
+  handleKeyDown(e: KeyboardEvent): void {
     this.keys[e.key] = true
   }
 
-  handleKeyUp(e) {
+  handleKeyUp(e: KeyboardEvent): void {
     this.keys[e.key] = false
   }
 
-  update(delta) {
+  update(delta: number): void {
     // 更新速度
     this.updateVelocity()
     
@@ -43,7 +43,7 @@ export class Player {
     this.updateRotation()
   }
 
-  updateVelocity() {
+  private updateVelocity(): void {
     // 重置速度
     this.velocity.x = 0
     this.velocity.y = 0
@@ -70,17 +70,15 @@ export class Player {
     }
   }
 
-  updateRotation() {
+  private updateRotation(): void {
     // 根据速度方向旋转玩家
     if (this.velocity.x !== 0 || this.velocity.y !== 0) {
       this.sprite.rotation = Math.atan2(this.velocity.y, this.velocity.x)
     }
   }
 
-  destroy() {
+  destroy(): void {
     // 清理资源
-    if (this.sprite) {
-      this.sprite.destroy()
-    }
+    this.sprite.destroy()
   }
 }

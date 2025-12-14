@@ -1,13 +1,11 @@
 import * as PIXI from 'pixi.js'
-import { MainScene } from '../scenes/MainScene.js'
+import { MainScene } from '../scenes/MainScene'
 
 export class Game {
-  constructor() {
-    this.app = null
-    this.currentScene = null
-  }
+  private app: PIXI.Application | null = null
+  private currentScene: MainScene | null = null
 
-  init() {
+  init(): void {
     // 创建PIXI应用
     this.app = new PIXI.Application({
       width: 800,
@@ -19,7 +17,9 @@ export class Game {
 
     // 将canvas添加到DOM
     const appContainer = document.querySelector('#app')
-    appContainer.appendChild(this.app.view)
+    if (appContainer) {
+      appContainer.appendChild(this.app.view)
+    }
 
     // 设置响应式
     this.setupResponsive()
@@ -28,15 +28,19 @@ export class Game {
     this.switchScene('main')
   }
 
-  setupResponsive() {
+  private setupResponsive(): void {
     window.addEventListener('resize', () => {
       this.resize()
     })
     this.resize()
   }
 
-  resize() {
+  private resize(): void {
+    if (!this.app) return
+    
     const appContainer = document.querySelector('#app')
+    if (!appContainer) return
+    
     const width = appContainer.clientWidth
     const height = appContainer.clientHeight
     
@@ -47,7 +51,9 @@ export class Game {
     }
   }
 
-  switchScene(sceneName) {
+  private switchScene(sceneName: string): void {
+    if (!this.app) return
+    
     // 移除当前场景
     if (this.currentScene) {
       this.app.stage.removeChild(this.currentScene.container)
@@ -65,19 +71,23 @@ export class Game {
     }
 
     // 添加新场景到舞台
-    this.app.stage.addChild(this.currentScene.container)
+    if (this.currentScene) {
+      this.app.stage.addChild(this.currentScene.container)
+    }
   }
 
-  update(delta) {
+  update(delta: number): void {
     if (this.currentScene && this.currentScene.update) {
       this.currentScene.update(delta)
     }
   }
 
-  destroy() {
+  destroy(): void {
     if (this.currentScene) {
       this.currentScene.destroy()
     }
-    this.app.destroy(true)
+    if (this.app) {
+      this.app.destroy(true)
+    }
   }
 }
